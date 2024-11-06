@@ -83,3 +83,35 @@ namespace MultiThreadedFileWriter
                 Console.WriteLine("Target file size reached. Final file size displayed.");
             }
         }
+
+        //
+        // FUNCTION : WriteRandomDataToFile
+        // DESCRIPTION : This function uses a common StreamWriter to write 36-character random data strings to the file.
+        // Until the cancellation signal tells it to stop, it keeps writing.
+        // PARAMETERS :
+        // StreamWriter writer 
+        // CancellationToken token 
+        // RETURNS :
+        // Task : When writing stops and a delayed task finishes
+
+        static async Task WriteRandomDataToFile(StreamWriter writer, CancellationToken token)
+        {
+            try
+            {
+                Random random = new Random();
+                while (!token.IsCancellationRequested)
+                {
+                    string data = GenerateRandomString(36, random);
+
+
+                    lock (_fileLock)
+                    {
+                        writer.WriteLine(data);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error writing to file: {ex.Message}");
+            }
+        }
